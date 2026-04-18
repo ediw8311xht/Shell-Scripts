@@ -16,7 +16,7 @@ rotate_m() {
         xrandr --output "${1}" --rotate "${2}"
     fi
     update_monitor_export
-    "${HOME}/bin/xwallpaperauto.sh" --silent
+    "${HOME}/bin/feh_wallpaper.sh" --silent
 }
 
 set_xrec() {

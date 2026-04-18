@@ -8,17 +8,17 @@ main_make_run_cpp() {
     local include_files=()
 
     # Functions
-    check_files() {
+    __check_files() {
         if [[ "${#}" -le 0 ]] ; then
             return 0
         elif [[ ! -f "${1}" ]] ; then 
             printf "File Not Found: '%s'\n" "${1}" >&2
             exit 1
         else
-            check_files "${@: 2}"
+            __check_files "${@: 2}"
         fi
     }
-    handle_args() {
+    __handle_args() {
         while [[ "${#}" -gt 0 ]] ; do
             if [[ "${1##*.}" =~ [.].*info$ ]] ; then
                 info_file="${1}"
@@ -26,7 +26,7 @@ main_make_run_cpp() {
             elif [[ "${1,,}" =~ ^-[a-z]$ ]] ; then
                 include_files+=( "${1}" "${2}" )
                 shift 2
-            elif [[ -n "${1}" ]] && check_files "${@}" ; then
+            elif [[ -n "${1}" ]] && __check_files "${@}" ; then
                 run_file="${*}"
                 return 0
             elif ! run_file="$(fd -e .cpp -e .h)" ; then
@@ -38,7 +38,7 @@ main_make_run_cpp() {
         done
     }
 
-    handle_args "${@}"
+    __handle_args "${@}"
     if [[ -f "${info_file}" ]] ; then
         xargs g++ -std="c++23" @"${info_file}" -o "${outfile}" <<< "${run_file}"
     else

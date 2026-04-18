@@ -1,8 +1,5 @@
 #!/bin/bash
 
-
-# prevent from running forever
-
 getfrom() {
     local a
     a="$(gzip -k -d "${1}" -c | cut -d ',' -f 5)"
