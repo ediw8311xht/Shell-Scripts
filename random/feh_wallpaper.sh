@@ -74,7 +74,7 @@ dirs_with_pics() {
 
 dmenu_set() {
   local a
-  a="$(fd -tf -e 'jpg' -e 'webp' -e 'png' -e 'jpg' | "${MY_DMENU}")" && \
+  a="$(fd . -tf -e 'jpg' -e 'webp' -e 'png' -e 'jpg' "${MAIN_DIR}" | "${MY_DMENU}")" && \
     feh "${PARGS[@]:---bg-fill}" "${a}"
 }
 
