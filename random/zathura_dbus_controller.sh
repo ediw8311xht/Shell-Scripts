@@ -19,7 +19,7 @@ script_main() ( #------------------ subshell begin ------------------------#
       break
     fi
   done
-  # if command -v plocate ; then local -r 
+  # if command -v plocate ; then local -r
   #local -r FIND_COMMAND="$(type -P plocate || type -P fd || type -P find)"
   local -r ZATHURA_DATA_DIR="${XDG_DATA_HOME:-"${HOME}/.local/share"}/zathura"
   local -r HFILE="${ZATHURA_DATA_DIR}/bookmarks.sqlite"
@@ -92,10 +92,11 @@ script_main() ( #------------------ subshell begin ------------------------#
 #-------DMENU-----------------#
   dmenu_get_filename()      { get_filenames | "${DMENU_SCRIPT}"; }
   update_database() {
+    msg "[started] updating db" "${CACHE_DATABASE}"
     if updatedb -l 0 -U "${HOME}" -o "${CACHE_DATABASE}" ; then
-      msg "Updated db" "${CACHE_DATABASE}"
+      msg "[finished] updating db" "${CACHE_DATABASE}"
     else
-      msg "Error updating db"
+      msg "[error] updating db"
     fi
   }
   find_t() {
@@ -195,10 +196,11 @@ script_main() ( #------------------ subshell begin ------------------------#
       ;;  -p|--pagenumber)      get_page_number
       ;;  -r|--recolor)         toggle_recolor
       ;;  -s|--set)             set_most_recent "$(get_bus_by_filename)"
+      ;;  -fc|--find-command)   FIND_COMMAND="${2}"; shift 1
       ;;  --pdfgrep)            find_in_file "${@:2}"
       ;;  --reset-data)         reset_data_dir && exit 0
       ;;  -*)                   echo "Invalid option"; return 1
-      ;;   *)                   FILENAME="${1}"
+      ;;  *)                    FILENAME="${1}"
       esac
       shift 1
     done

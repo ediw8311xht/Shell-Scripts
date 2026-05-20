@@ -32,6 +32,14 @@ main() {
     __send_m $? "disconnected"
   }
 
+  # __get_bluetooth_cards() {
+  #   pactl list cards short | grep -ZPio '^[0-9]+\s+\K(blue).*$'
+  # }
+  # __get_non_bluetooth_cards() {
+  #   pactl list cards short | grep -v -ZPio '^[0-9]+\s+\K(blue).*$'
+  # }
+  # __toggle_cards() {
+  # }
   __ubluetoggle() {
     if ! bluetoothctl info; then
       __connect
