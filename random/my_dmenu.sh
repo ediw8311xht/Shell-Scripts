@@ -43,7 +43,7 @@ main() {
   if [[ "${DMENU_COMMAND}" = "j4" ]] ; then
     __j4_run "${LEFT_OVER_ARGS[@]}"
   else
-    __dm_run "${@}" | ${RUN_WITH_SELECTION:-xargs echo}
+    __dm_run "${@}" | ${RUN_WITH_SELECTION:-xargs -0 echo}
   fi
 
 }

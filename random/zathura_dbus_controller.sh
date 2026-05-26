@@ -93,28 +93,25 @@ script_main() ( #------------------ subshell begin ------------------------#
   dmenu_get_filename()      { get_filenames | "${DMENU_SCRIPT}"; }
   update_database() {
     msg "[started] updating db" "${CACHE_DATABASE}"
-    if updatedb -l 0 -U "${HOME}" -o "${CACHE_DATABASE}" ; then
-      msg "[finished] updating db" "${CACHE_DATABASE}"
-    else
+    updatedb -l 0 -U "${HOME}" -o "${CACHE_DATABASE}" || {
       msg "[error] updating db"
-    fi
+      exit 1
+    }
+    msg "[finished] updating db" "${CACHE_DATABASE}"
   }
   find_t() {
-    # shellcheck disable=SC2068
+    if [[ -z "${FIND_COMMAND}" ]] || ! command -v "${FIND_COMMAND}" > /dev/null ; then
+      echo "command: '${FIND_COMMAND}' not found." > /dev/stderr
+      exit 1
+    fi
     case "${FIND_COMMAND}" in
-             plocate) plocate -b --regex "[.]($(my_join "|" "${EXTS_ARR[@]}" ))$" -d "${CACHE_DATABASE}"
-        ;;      find) # shellcheck disable=SC2046,SC2001
-                      find "${HOME}" -hidden -iname $(sed 's/ / -o iname /g' <<< "${EXTS_ARR[*]}") "${HOME}" 2>/dev/null
-        ;;         *) msg "Error" && exit 1
+           plocate) plocate -b --regex "[.]($(my_join "|" "${EXTS_ARR[@]}" ))$" -d "${CACHE_DATABASE}"
+      ;;      find) # shellcheck disable=SC2046,SC2001
+                    find "${HOME}" -hidden -iname $(sed 's/ / -o iname /g' <<< "${EXTS_ARR[*]}") "${HOME}" 2>/dev/null
+      ;;         *) msg "[error] unrecognized find command: '${FIND_COMMAND}'"; exit 1
     esac
   }
 
-  # plocate_ebooks() {
-  #     local f
-  #     while read -r -d $'\n'  f ;  do
-  #       [[ ! -d "${f}" ]] && echo "${f}"
-  #     done < <(plocate -b --regex "[.]($(my_join "|" "${EXTS_ARR[@]}" ))$" -d "${CACHE_DATABASE}")
-  # }
   dmenu_open_file() {
     local my_file
     if [[ "${1:-}" = 'history' ]] ; then
@@ -175,10 +172,7 @@ script_main() ( #------------------ subshell begin ------------------------#
     fi
   }
 #-----MAIN--------------------------------------------#
-  main() {
-    get_buslist
-    check_most_recent
-    set_data_files
+  handle_args() {
     while [[ "${#}" -gt 0 ]] ; do
       case "${1}" in
           -g|--get)             check_most_recent "reset_recent" && msg "updated bus names" "$(get_most_recent)"
@@ -199,16 +193,20 @@ script_main() ( #------------------ subshell begin ------------------------#
       ;;  -fc|--find-command)   FIND_COMMAND="${2}"; shift 1
       ;;  --pdfgrep)            find_in_file "${@:2}"
       ;;  --reset-data)         reset_data_dir && exit 0
+      ;;  --help)               declare -f "${FUNCNAME[0]}"; exit 0
       ;;  -*)                   echo "Invalid option"; return 1
       ;;  *)                    FILENAME="${1}"
       esac
       shift 1
     done
   }
+  main() {
+    get_buslist
+    check_most_recent
+    set_data_files
+    handle_args "${@}"
+  }
   main "${@}"
-  #echo "$FIND_COMMAND"
-  # plocate -b --regex "[.]($(my_join "|" "${EXTS_ARR[@]}" ))$" -d "${CACHE_DATABASE}"
-  # echo "[.]($(my_join "|" "${EXTS_ARR[@]}" ))$"
 ) #------------------ subshell end ------------------------#
 
 script_main "${@}"
