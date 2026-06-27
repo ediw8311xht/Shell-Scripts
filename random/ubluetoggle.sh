@@ -4,7 +4,6 @@ main() {
   # shellcheck disable=SC2034
   local SCRIPT_NAME="${0##*/}"
   # local LOGS_DIR="${XDG_DATA_HOME}/script_logs/"
-  local NOTIFY_ICON="${HOME}/bin/Resources/Images/bluetooth.png"
   local DEVMAC=""
   local TIMEOUT="5"
   local pid
@@ -25,6 +24,7 @@ main() {
     bluetoothctl --timeout "${TIMEOUT}" \
       <<< $'\n'"connect '${DEVMAC}'"
     # & pid=$!
+    # ls -1 /proc/$pid
     __send_m $? "connected"
   }
   __disconnect() {
