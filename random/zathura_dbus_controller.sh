@@ -4,7 +4,7 @@
 # shellcheck disable=SC2155
 script_main() ( #------------------ subshell begin ------------------------#
 #-------UTILITY-FUNCTIONS-----#
-  msg()                     { notify-send "${SCRIPT_NAME}$(printf "\n%s"  "${@}")"; }
+  msg()                     { notify-send "${SCRIPT_NAME}" "$(printf "\n%s"  "${@}")"; }
   my_join()                 {  local IFS="${1}"; echo "${*:2}"; }
 #----------------------------------------------------------#
 #-------VARS-----------------------------------------------#
@@ -12,6 +12,10 @@ script_main() ( #------------------ subshell begin ------------------------#
 
 #-------ZATHURA-DB-VARS-------#
   # Preference Order: plocate, fd, find
+  if [[ -z "${XDG_CONFIG_HOME}" ]] ; then
+    msg "env var \$XDG_CONFIG_HOME undefined"; return 1
+  fi
+  local -r UPDATEDB_CONFIG="${XDG_CONFIG_HOME}/updatedb/updatedb.conf"
   local -r VALID_COMMAND_ARR=(plocate fd find)
   for i in "${VALID_COMMAND_ARR[@]}" ; do
     if command -v "${i}" >/dev/null ; then
@@ -93,7 +97,7 @@ script_main() ( #------------------ subshell begin ------------------------#
   dmenu_get_filename()      { get_filenames | "${DMENU_SCRIPT}"; }
   update_database() {
     msg "[started] updating db" "${CACHE_DATABASE}"
-    updatedb -l 0 -U "${HOME}" -o "${CACHE_DATABASE}" || {
+    updatedb -l 0 -U "${HOME}" --config-file "${UPDATEDB_CONFIG}" -o "${CACHE_DATABASE}" || {
       msg "[error] updating db"
       exit 1
     }

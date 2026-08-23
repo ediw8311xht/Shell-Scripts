@@ -23,14 +23,11 @@ __main() {
       OPTS+=("${SETUP_QUICK[@]}")
       ;;
     -u | --import-utils)
-      OPTS+=(--eval '(ql:quickload "maximilian-utils")')
+      OPTS+=(--eval '(ql:quickload "maximilian-utils" :silent t)')
       ;;
     -h)
       declare -f "${FUNCNAME[0]}" | highlight --out-format 'truecolor' --syntax 'bash'
       return 1
-      ;;
-    -)
-      SCRIPT="/dev/stdin"
       ;;
     --)
       SCRIPT="${*:2}"

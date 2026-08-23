@@ -69,12 +69,12 @@ pic_find() {
 }
 
 dirs_with_pics() {
-  fd  . --exact-depth 1 -td  --absolute-path "${MAIN_DIR}" | sort -u
+  fd  . --exact-depth 1 --type directory  --type symlink --absolute-path "${MAIN_DIR}" | sort -u
 }
 
 dmenu_set() {
   local a
-  a="$(fd . -tf -e 'jpg' -e 'webp' -e 'png' -e 'jpg' "${MAIN_DIR}" | "${MY_DMENU}")" && \
+  a="$(fd . -tf -e 'jpeg' -e 'webp' -e 'png' -e 'jpg' "${MAIN_DIR}" | "${MY_DMENU}")" && \
     feh "${PARGS[@]:---bg-fill}" "${a}"
 }
 
