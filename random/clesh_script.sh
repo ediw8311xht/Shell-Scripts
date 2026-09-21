@@ -10,6 +10,7 @@ __main() {
     --eval '(ql:quickload "clesh" :silent t)'
   )
   local SETUP_QUICK=(
+    --load "$BIN/clesh/helper-functions.lisp"
     --eval '(ql:quickload "named-readtables" :silent t)'
     --eval '(ql:quickload "uiop" :silent t)'
     --eval "(import 'clesh:script)"

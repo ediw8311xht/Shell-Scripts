@@ -13,19 +13,14 @@ rg_fzf_func() {
         --ansi --disabled --query "$INITIAL_QUERY"
         --bind "start:reload:$RG_PREFIX {q}"
         --bind "change:reload:sleep 0.1; $RG_PREFIX {q} || true"
+        --bind "enter:become(   printf '%s\0' 'edit'    {1} {2} )"
         --bind "ctrl-b:become(  printf '%s\0' 'browser' {1}     )"
+        --bind "ctrl-c:become(  printf '%s\0' 'cd'      {1}     )"
         --bind "ctrl-l:become(  printf '%s\0' 'lf'      {1}     )"
         --bind "ctrl-x:execute( printf '%s\0' 'xdg'     {1}     )"
-        --bind "ctrl-c:become(  printf '%s\0' 'cd'      {1}     )"
-        --bind "enter:become(   printf '%s\0' 'edit'    {1} {2} )"
-        --bind "ctrl-t:toggle-preview"
-        --bind "ctrl-d:half-page-down"
-        --bind "ctrl-u:half-page-up"
-        --bind "ctrl-g:preview-half-page-down"
-        --bind "ctrl-h:preview-half-page-up"
         --delimiter :
         --preview 'bat --color=always {1} --highlight-line {2}'
-        --preview-window 'right,50%,border-bottom,+{2}+3/3,~3'
+        --preview-window 'right,60%,border-bottom,+{2}+3/3,~3'
     )
     if mapfile -d $'\0' outarr < <(fzf "${OPTIONS[@]}") ; then
         dir="$(dirname "${outarr[1]}")"
