@@ -52,13 +52,13 @@ pl_kill() {
     local mon
     if mon="$(xrec_get_pid "${1}")" ; then
         xrec_set "${1}_pid: NONE"
-        polybar-msg -p "${mon}" "cmd" "quit" 
+        polybar-msg -p "${mon}" "cmd" "quit"
     else
         return 1
     fi
 }
 pl_kill_all() { polybar-msg "cmd" "quit" && xrec_set_none; }
-pl_toggle_dmenu() { 
+pl_toggle_dmenu() {
     local name _value
     if read -r name < <( "${DMENU_SCRIPT}" < <(echo "all"; echo "other"; xrec_get_mons -one; ) ) ; then
         toggle_polybar "${name}"
@@ -92,7 +92,7 @@ config_select() {
 }
 toggle_polybar() {
     case "${1,,}" in
-        all) polybar-msg cmd toggle 
+        all) polybar-msg cmd toggle
     ;;  other)
         local mon
         while read -r -d $'\n' mon ; do
@@ -121,24 +121,26 @@ move_poly() {
 handle_args() {
     while [[ "${#}" -gt 0 ]] ; do
         case "${1,,}" in
-                 move)  move_poly "${2}"; shift
-        ;;     launch)  pl_launch_all ; return
         # ;;        all)  DIS_MODE='all'
         # ;;    primary)  DIS_MODE='primary'
         # ;;  secondary)  DIS_MODE='secondary'
-        ;;       show)  pl_launch_all ; return
-        ;;       hide)  pl_kill_all   ; return
+                 move)  move_poly "${2}"     ; shift
+        ;;     launch)  pl_launch_all        ; return
+        ;;       show)  pl_launch_all        ; return
+        ;;       hide)  pl_kill_all          ; return
         ;;     toggle)  toggle_polybar 'all' ; return
-        ;;     config)  config_select "${2}"; shift
-        ;;      dmenu)  select_dmenu    ; return
-        ;;     tdmenu)  pl_toggle_dmenu ; return
-        ;;          *)  error "Invalid Argument" ; return 1
+        ;;     config)  config_select "${2}" ; shift
+        ;;      dmenu)  select_dmenu         ; return
+        ;;     tdmenu)  pl_toggle_dmenu      ; return
+        ;;          *)
+          echo "Invalid Argument: '${1}'"
+          return 1
         esac
         shift
     done
 }
 
-handle_args "${@}"  &>> "${LOGS}/log_$(date '+%s')" 
+handle_args "${@}"  &>> "${LOGS}/log_$(date '+%s')"
 } #---------------------------- END ----------------------------#
 
 main "${@}"

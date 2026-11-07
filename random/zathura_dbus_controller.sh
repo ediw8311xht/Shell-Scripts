@@ -1,15 +1,16 @@
 #!/bin/bash
 
-#set -eu
 # shellcheck disable=SC2155
+#--------------------------------------------------------------------------#
 script_main() ( #------------------ subshell begin ------------------------#
-  #-------UTILITY-FUNCTIONS-----#
-  msg()                     { notify-send "${SCRIPT_NAME}" "$(printf "\n%s"  "${@}")"; }
-  my_join()                 {  local IFS="${1}"; echo "${*:2}"; }
-  #----------------------------------------------------------#
-  #-------VARS-----------------------------------------------#
-  #----------------------------------------------------------#
-
+#--------------------------------------------------------------------------#
+#set -eu
+#-------UTILITY-FUNCTIONS-----#
+msg()                     { notify-send "${SCRIPT_NAME}" "$(printf "\n%s"  "${@}")"; }
+my_join()                 {  local IFS="${1}"; echo "${*:2}"; }
+#----------------------------------------------------------#
+#-------VARS-----------------------------------------------#
+#----------------------------------------------------------#
 #-------ZATHURA-DB-VARS-------#
 # Preference Order: plocate, fd, find
 if [[ -z "${XDG_CONFIG_HOME}" ]] ; then
@@ -55,9 +56,12 @@ set_find_command() {
       continue
     elif command -v "${i}" >/dev/null ; then
       FIND_COMMAND="${i}"
-      break
+      return 0
     fi
   done
+  local message="Couldn't find valid find command from list: ${VALID_COMMAND_ARR[*]/%/,}"
+  msg "${message::(-1)}"
+  exit 1
 }
 read_histfile() {
   while read -r -d $'\n' n ; do
@@ -120,9 +124,10 @@ find_t() {
     exit 1
   fi
   case "${FIND_COMMAND}" in
-    plocate) plocate -b --regex "[.]($(my_join "|" "${EXTS_ARR[@]}" ))$" -d "${CACHE_DATABASE}"
+            locate) locate -b --regex "[.]($(my_join "|" "${EXTS_ARR[@]}" ))$" -d "${CACHE_DATABASE}"
+      ;;   plocate) plocate -b --regex "[.]($(my_join "|" "${EXTS_ARR[@]}" ))$" -d "${CACHE_DATABASE}"
       ;;      find) # shellcheck disable=SC2046,SC2001
-      find "${DIRECTORY:-"${HOME}"}" -hidden -iname $(sed 's/ / -o iname /g' <<< "${EXTS_ARR[*]}") "${HOME}" 2>/dev/null
+                    find . -iname $(sed 's/ / -o -iname /g' <<< "${EXTS_ARR[*]}") 2>/dev/null
       ;;         *) msg "[error] unrecognized find command: '${FIND_COMMAND}'"; exit 1
     esac
 }
@@ -133,6 +138,7 @@ dmenu_open_file() {
     shift 1
     my_file="$(read_histfile | "${DMENU_SCRIPT}")"
   else
+    cd "${DIRECTORY:-"${HOME}"}" || { msg "[error] error cding into '${DIRECTORY}'"; return 1; }
     my_file="$(find_t | "${DMENU_SCRIPT}")"
   fi
 
@@ -224,7 +230,9 @@ main() {
   handle_args "${@}"
 }
 main "${@}"
-) #------------------ subshell end ------------------------#
+#--------------------------------------------------------------------------#
+) #------------------ subshell end ----------------------------------------#
+#--------------------------------------------------------------------------#
 
 script_main "${@}"
 

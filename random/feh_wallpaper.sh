@@ -65,16 +65,29 @@ update_data_file() {
 }
 
 pic_find() {
-  fd . -a --exact-depth 1 -e 'jpg' -e 'jpeg' -e 'webp' -e 'png' --format '{}' "${1}" | sort -u
+  # --follow - (follow symlinks)
+  fd  -a -L \
+      --exact-depth 1     \
+      -e 'jpg' -e 'jpeg'  \
+      -e 'webp' -e 'png'  \
+      --format '{}'       \
+      . "${1}"            \
+      | sort -u
 }
 
 dirs_with_pics() {
-  fd  . --exact-depth 1 --type directory  --type symlink --absolute-path "${MAIN_DIR}" | sort -u
+  fd  -L \
+      --exact-depth 1   \
+      --type directory  \
+      --type symlink    \
+      --absolute-path   \
+    . "${MAIN_DIR}"     \
+    | sort -u
 }
 
 dmenu_set() {
   local a
-  a="$(fd . -tf -e 'jpeg' -e 'webp' -e 'png' -e 'jpg' "${MAIN_DIR}" | "${MY_DMENU}")" && \
+  a="$(fd -L -tf -e 'jpeg' -e 'webp' -e 'png' -e 'jpg' . "${MAIN_DIR}" | "${MY_DMENU}")" && \
     feh "${PARGS[@]:---bg-fill}" "${a}"
 }
 

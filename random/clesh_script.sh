@@ -6,6 +6,7 @@ __main() {
   local OPTS=(
     --noinform
     --load "$HOME/.sbclrc"
+    --eval '(in-package :cl-user)'
     --eval '(ql:quickload "asdf"  :silent t)'
     --eval '(ql:quickload "clesh" :silent t)'
   )
@@ -25,6 +26,12 @@ __main() {
       ;;
     -u | --import-utils)
       OPTS+=(--eval '(ql:quickload "maximilian-utils" :silent t)')
+      ;;
+    -U | --import-utils-all)
+      OPTS+=(
+        --eval '(require :maximilian-utils)'
+        --eval '(use-package :maximilian-utils)'
+      )
       ;;
     -h)
       declare -f "${FUNCNAME[0]}" | highlight --out-format 'truecolor' --syntax 'bash'
@@ -46,8 +53,9 @@ __main() {
     esac
     __handle_args "${@:2}"
   }
-  __handle_args "${@}" &&
+  if __handle_args "${@}"; then
     /usr/bin/sbcl "${OPTS[@]}" --script "${SCRIPT}" "${SCRIPT_ARGS[@]}"
+  fi
 }
 
 __main "${@}"
