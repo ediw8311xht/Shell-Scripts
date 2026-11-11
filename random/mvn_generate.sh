@@ -12,9 +12,9 @@ _generate_mvn_project() {
       return 1
     }
     local settings=(
-      # exec.mainClass="${ARTIFACT_ID}.App"
+      archetypeGroupId=com.maxballard.java
       archetypeArtifactId=maximilian-template-archetype
-      archetypeVersion=1.5
+      archetypeVersion=1.0-SNAPSHOT
       artifactId="${ARTIFACT_ID}"
       groupId="${GROUP_ID}"
       version=1.0.0
