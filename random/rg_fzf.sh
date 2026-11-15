@@ -20,7 +20,7 @@ rg_fzf_func() {
         --bind "ctrl-x:execute( printf '%s\0' 'xdg'     {1}     )"
         --delimiter :
         --preview 'bat --color=always {1} --highlight-line {2}'
-        --preview-window 'right,60%,border-bottom,+{2}+3/3,~3'
+        --preview-window 'right,60%,border-bottom,+{2}+3/3,~3:wrap'
     )
     if mapfile -d $'\0' outarr < <(fzf "${OPTIONS[@]}") ; then
         dir="$(dirname "${outarr[1]}")"
