@@ -52,17 +52,17 @@ _generate_mvn_project() {
   _handle_args() {
     while [[ "${#}" -gt 0 ]]; do
       case "${1,,}" in
-      c) ARGS+=(clean) ;;
-      mw) MVN_TYPE='./mvnw' ;;& # catch spring but also allow explicit with `-w` SWAG!
-      x) ${MVN_TYPE} "${ARGS[@]}" compile exec:java ;;
-      i) ${MVN_TYPE} "${ARGS[@]}" clean install ;;
-      spring)
+      c | clean) ARGS+=(clean) ;;
+      m | mvnw) MVN_TYPE='./mvnw' ;;& # catch spring but also allow explicit with `-w` SWAG!
+      x | exec) ${MVN_TYPE} "${ARGS[@]}" compile exec:java ;;
+      i | install) ${MVN_TYPE} "${ARGS[@]}" clean install ;;
+      sp | spring)
         MVN_TYPE="./mvnw"
         _spring "${@:2}"
         return
         ;;
-      setup)
-        _setup "${@}"
+      se | setup)
+        _setup "${@:2}"
         return
         ;;
       *) return ;; esac
